@@ -1,3 +1,50 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{% block title %}Improvement Register{% endblock %}</title><style>
-body{font-family:Arial,sans-serif;max-width:1050px;margin:2rem auto;padding:0 1rem;background:#f7f7f7;color:#222}header{border-bottom:3px solid #333;margin-bottom:1.5rem}section{background:white;padding:1rem;margin:1rem 0;border-radius:6px}label{display:block;margin-top:.7rem}input,select,button{padding:.55rem;margin-top:.2rem}table{width:100%;border-collapse:collapse}th,td{padding:.6rem;border-bottom:1px solid #ddd;text-align:left}.flash{padding:.7rem;background:#eee}.cards{display:flex;gap:1rem;flex-wrap:wrap}.card{border:1px solid #ddd;padding:.8rem;min-width:130px}
-</style></head><body><header><h1>Service Improvement Register</h1><p>Fictional, organisation-neutral demonstrator</p></header>{% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<p class="flash">{{ message }}</p>{% endfor %}{% endwith %}{% block content %}{% endblock %}</body></html>
+{% from '_icons.html' import icon %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Lloyds Banking Group | Service Improvement{% endblock %}</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='app.css') }}" rel="stylesheet">
+<script defer src="{{ url_for('static', filename='app.js') }}">
+</script>
+</head>
+<body class="{{ 'auth-screen' if not g.user else '' }}">
+<a class="skip-link" href="#main">Skip to content</a>
+<aside class="sidebar" id="sidebar">
+<a class="brand" href="{{ url_for('main.index') }}">
+<img class="brand-logo" src="{{ url_for('static', filename='lloyds-banking-group.svg') }}" alt="Lloyds Banking Group"><span class="brand-sub">SERVICE IMPROVEMENT</span>
+</a>
+<div class="nav-label">WORKSPACE</div>
+<nav aria-label="Main navigation">{% if g.user %}
+<a class="{{ 'active' if request.path == '/' }}" href="{{ url_for('main.index') }}">{{ icon("overview") }} <span>Overview</span>
+</a>
+<a class="{{ 'active' if request.path.startswith('/requests') or request.path.startswith('/items') }}" href="{{ url_for('main.register') }}">{{ icon("list") }} <span>Improvement requests</span>
+</a>
+<a href="{{ url_for('main.add') }}">{{ icon("plus") }} <span>Create request</span>
+</a>
+<a class="{{ 'active' if request.path.startswith('/community') }}" href="{{ url_for('community.index') }}">{{ icon("community") }} <span>Community Q&amp;A</span></a>
+{% else %}<a href="{{ url_for('auth.login') }}">Sign in</a><a href="{{ url_for('auth.register') }}">Create account</a>{% endif %}</nav>
+<div class="sidebar-footer">
+<span class="workspace-icon">LBG</span>
+<div>Banking improvement<small>Unofficial demonstration</small>
+</div>
+</div>
+</aside>
+<div class="workspace">
+<header class="topbar">
+<button class="menu-button" id="menu-toggle" aria-controls="sidebar" aria-expanded="true" aria-label="Toggle navigation">{{ icon("menu") }}</button>
+<span>Workspace <span class="crumb">/ Service improvement</span>
+</span>
+<span class="topbar-right">
+<span class="live-dot">
+</span> {% if g.user %}<span class="signed-in-name">{{ g.user.display_name }}</span><form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"><button class="btn btn-light">Sign out</button></form>{% else %}Continuous improvement{% endif %}
+</span>
+</header>
+<main id="main" tabindex="-1">{% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div role="status" class="alert {{ 'alert-danger' if category == 'error' else 'alert-success' }}">{{ message }}</div>{% endfor %}{% endwith %}{% block content %}{% endblock %}<footer>Service Improvement Register <span>Lloyds Banking Group &middot; Fictional data</span>
+</footer>
+</main>
+</div>
+</body>
+</html>

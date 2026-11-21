@@ -1,5 +1,159 @@
-{% extends 'base.html' %}{% block content %}
-<section><h2>Record improvement</h2><form method="post" action="{{ url_for('main.add') }}"><label>Title<input name="title" required minlength="3" maxlength="100"></label><label>Category<select name="category">{% for value in categories %}<option>{{ value }}</option>{% endfor %}</select></label><label>Priority<select name="priority">{% for value in priorities %}<option>{{ value }}</option>{% endfor %}</select></label><button type="submit">Add request</button></form></section>
-<section><h2>Dashboard</h2><div class="cards">{% for status in statuses %}<div class="card"><strong>{{ status }}</strong><br>{{ data.status_totals.get(status,0) }}</div>{% endfor %}</div></section>
-<section><h2>Requests</h2><form method="get"><label>Filter by status<select name="status"><option value="">All</option>{% for value in statuses %}<option {% if selected==value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></label><button>Apply</button></form><table><thead><tr><th>Title</th><th>Category</th><th>Priority</th><th>Status</th><th>Action</th></tr></thead><tbody>{% for item in data["items"] %}<tr><td>{{ item.title }}</td><td>{{ item.category }}</td><td>{{ item.priority }}</td><td>{{ item.status }}</td><td><form method="post" action="{{ url_for('main.set_status',item_id=item.id) }}"><select name="status">{% for value in statuses %}<option {% if item.status==value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select><button>Update</button></form></td></tr>{% else %}<tr><td colspan="5">No requests recorded.</td></tr>{% endfor %}</tbody></table></section>
-{% endblock %}
+{% extends 'base.html' %}{% from '_icons.html' import icon %}{% block content %}
+<div class="page-heading">
+<div>
+<div class="eyebrow">LLOYDS BANKING GROUP &middot; DEMONSTRATION</div>
+<h1>{{ 'Improvement requests' if register else 'Overview' }}</h1>
+<p>{{ 'Track banking improvements, accountable teams and customer benefits.' if register else 'Better customer outcomes. Stronger controls. Measurable improvements.' }}</p>
+</div>
+<a class="btn btn-primary" href="{{ url_for('main.add') }}">{{ icon("plus") }} New request</a>
+</div>
+{% if not register %}
+<div class="metric-grid">
+<article class="metric">
+<span>Total requests</span>
+<strong>{{ metrics.total }}</strong>
+<small>Across your active register</small>
+</article>
+<article class="metric">
+<span>Open requests</span>
+<strong>{{ data.status_totals.get('New',0) }}</strong>
+<small>Ready for a closer look</small>
+</article>
+<article class="metric">
+<span>In progress</span>
+<strong>{{ data.status_totals.get('In Progress',0) }}</strong>
+<small>Turning ideas into action</small>
+</article>
+<article class="metric accent">
+<span>Completed</span>
+<strong>{{ metrics.completed }} <em>{{ (metrics.completed * 100 / metrics.total)|round|int if metrics.total else 0 }}%</em>
+</strong>
+<small>Improvements delivered</small>
+</article>
+</div>
+<div class="insight">
+<span class="insight-icon">{{ icon("spark") }}</span>
+<div>
+<strong>Keep the momentum going</strong>
+<p>{{ metrics.high }} high-priority open requests &middot; {{ metrics.overdue }} overdue requests. Review these first to keep delivery on track.</p>
+</div>
+<a href="{{ url_for('main.index', priority='High') }}">Review priorities {{ icon("right") }}</a>
+</div>
+<div class="chart-grid">
+<section class="panel">
+<div class="panel-heading">
+<h2>Request activity</h2>
+<span>Last 30 recorded days</span>
+</div>
+<div class="chart-container">
+<canvas id="trend" role="img" aria-label="Requests created by date">
+</canvas>
+</div>
+<details>
+<summary>View chart data</summary>{% for row in trend %}<p>{{ row.day }}: {{ row.total }}</p>{% else %}<p>No data yet.</p>{% endfor %}</details>
+</section>
+<section class="panel">
+<div class="panel-heading">
+<h2>Status distribution</h2>
+<span>Active requests</span>
+</div>
+<div class="chart-container">
+<canvas id="status" role="img" aria-label="Request status distribution">
+</canvas>
+</div>
+<div class="legend">{% for status in statuses %}<span>{{ status }} <b>{{ data.status_totals.get(status,0) }}</b>
+</span>{% endfor %}</div>
+</section>
+<section class="panel">
+<div class="panel-heading">
+<h2>Priority distribution</h2>
+</div>
+<div class="chart-container">
+<canvas id="priority" role="img" aria-label="Request priority distribution">
+</canvas>
+</div>
+<div class="legend">{% for priority in priorities %}<span>{{ priority }} <b>{{ data.priority_totals.get(priority,0) }}</b>
+</span>{% endfor %}</div>
+</section>
+</div>
+{% endif %}
+<section class="panel register">
+<div class="panel-heading">
+<div>
+<h2>Improvement register</h2>
+<p>{{ total }} matching requests &middot; Ideas with a path to impact</p>
+</div>
+<a href="/requests">View all {{ icon("right") }}</a>
+</div>
+<form class="filters" method="get">
+<label class="search-label">
+<span class="visually-hidden">Search requests</span>
+<input class="form-control" name="q" placeholder="Search title or description..." value="{{ filters.q }}">
+</label>{% for key,values in [('status',statuses),('priority',priorities),('category',categories)] %}<label>
+<span class="visually-hidden">{{ key|title }}</span>
+<select class="form-select" name="{{ key }}">
+<option value="">All {{ key }}</option>{% for value in values %}<option {% if filters[key]==value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select>
+</label>{% endfor %}<label>
+<span class="visually-hidden">Sort order</span>
+<select class="form-select" name="sort">{% for value,label in [('newest','Newest first'),('oldest','Oldest first'),('title','Title A-Z'),('due','Due date')] %}<option value="{{ value }}" {% if filters.sort==value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+</label>
+<button class="btn btn-light">Apply</button>
+<a class="reset" href="{{ request.path }}">Reset</a>
+</form>
+<div class="table-responsive">
+<table class="table align-middle">
+<thead>
+<tr>
+<th scope="col">REQUEST</th>
+<th scope="col">CATEGORY</th>
+<th scope="col">PRIORITY</th>
+<th scope="col">STATUS</th>
+<th scope="col">DUE DATE</th>
+</tr>
+</thead>
+<tbody>{% for item in data['items'] %}<tr>
+<td>
+<small class="request-id">IMP-{{ '%04d'|format(item.id) }}</small>
+<a class="request-title" href="{{ url_for('main.detail', item_id=item.id) }}">{{ item.title }}</a><small class="request-context">{{ item.business_area or 'Business area not set' }} &middot; {{ item.owner or 'Owner not assigned' }}</small>
+</td>
+<td>{{ item.category }}</td>
+<td>
+<span class="priority {{ item.priority|lower }}"><span class="priority-dot" aria-hidden="true"></span> {{ item.priority }}</span>
+</td>
+<td>
+<span class="status {{ item.status|lower|replace(' ','-') }}">{{ item.status }}</span>
+</td>
+<td>{{ item.due_date or 'Not set' }}</td>
+</tr>{% else %}<tr>
+<td colspan="5">
+<div class="empty">
+<span>{{ icon("diamond") }}</span>
+<h3>{{ 'No matching requests' if filters.q or filters.status or filters.priority or filters.category else 'Your next improvement starts here' }}</h3>
+<p>Capture an idea and give it a clear path forward.</p>
+<a class="btn btn-primary" href="{{ url_for('main.add') }}">Create a request</a>
+</div>
+</td>
+</tr>{% endfor %}</tbody>
+</table>
+</div>
+<div class="pagination-bar">
+<span>Page {{ page }} of {{ pages }} &middot; {{ total }} results</span>
+<nav aria-label="Request pagination">{% if page > 1 %}<a class="btn btn-light" href="{{ url_for(request.endpoint, page=page-1, **filters) }}">{{ icon("left") }} Previous</a>{% endif %}{% if page < pages %}<a class="btn btn-light" href="{{ url_for(request.endpoint, page=page+1, **filters) }}">Next {{ icon("right") }}</a>{% endif %}</nav>
+</div>
+</section>
+{% if not register %}<section class="panel">
+<div class="panel-heading">
+<h2>Recent activity</h2>
+<span>Latest changes</span>
+</div>{% for event in recent %}<div class="activity">
+<span class="activity-dot">
+</span>
+<div>
+<a href="{{ url_for('main.detail',item_id=event.item_id) }}">{{ event.title }}</a>
+<p>{{ event.message }}</p>
+</div>
+<time>{{ event.created_at }} UTC</time>
+</div>{% else %}<p class="muted p-4">Activity will appear when you create or update a request.</p>{% endfor %}</section>
+<script id="chart-data" type="application/json">{{ {'statuses':data.status_totals,'priorities':data.priority_totals,'trend':trend}|tojson }}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js">
+</script>{% endif %}{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}{% from '_icons.html' import icon %}{% block content %}<a class="back-link" href="/requests">{{ icon("left") }} Improvement register</a>
+<div class="page-heading">
+<div>
+<div class="eyebrow">IMP-{{ '%04d'|format(item.id) }} {{ '| ARCHIVED' if item.archived }}</div>
+<h1>{{ item.title }}</h1>
+<p>Created {{ item.created_at }} UTC &middot; Updated {{ item.updated_at }} UTC</p>
+</div>{% if not item.archived %}<a class="btn btn-primary" href="{{ url_for('main.edit',item_id=item.id) }}">Edit request</a>{% endif %}</div>
+<div class="detail-grid">
+<section class="panel detail-content">
+<h2>The opportunity</h2>
+<p class="description">{{ item.description or 'No description provided.' }}</p>
+<h2>Banking context and benefits</h2><dl class="banking-summary">{% for key,definition in banking_fields.items() %}<div><dt>{{ definition[0] }}</dt><dd>{{ item[key] or 'Not specified' }}</dd></div>{% endfor %}</dl>
+<h2>Activity timeline</h2>{% for event in history %}<div class="activity">
+<span class="activity-dot">
+</span>
+<div>
+<strong>{{ event.message }}</strong>
+<p>{{ event.created_at }} UTC</p>
+</div>
+</div>{% else %}<p>Historical record: activity tracking began after this request was created.</p>{% endfor %}</section>
+<aside class="panel detail-content">
+<h2>Request details</h2>
+<dl>
+<dt>Category</dt>
+<dd>{{ item.category }}</dd>
+<dt>Priority</dt>
+<dd>
+<span class="priority {{ item.priority|lower }}"><span class="priority-dot" aria-hidden="true"></span> {{ item.priority }}</span>
+</dd>
+<dt>Due date</dt>
+<dd>{{ item.due_date or 'No due date' }}</dd>
+<dt>Status</dt>
+<dd>{{ item.status }}</dd>
+</dl>{% if not item.archived %}<form method="post" action="{{ url_for('main.set_status',item_id=item.id) }}">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+<label for="status">Update status</label>
+<select id="status" name="status" class="form-select">{% for value in statuses %}<option {% if item.status==value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select>
+<button class="btn btn-primary mt-3">Update status</button>
+</form>
+<hr>
+<details>
+<summary>Archive request</summary>
+<p>Removes this request from active reports. The record and activity remain available at this address.</p>
+<form method="post" action="{{ url_for('main.archive',item_id=item.id) }}">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+<label class="archive-label">
+<input type="checkbox" name="confirm" value="archive" required> I confirm this request should be archived.</label>
+<button class="btn btn-outline-danger mt-3">Archive request</button>
+</form>
+</details>{% endif %}</aside>
+</div>{% endblock %}

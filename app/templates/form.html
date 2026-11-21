@@ -1,0 +1,40 @@
+{% extends 'base.html' %}{% from '_icons.html' import icon %}{% block content %}<a class="back-link" href="/requests">{{ icon("left") }} Improvement register</a>
+<div class="page-heading">
+<div>
+<div class="eyebrow">MAKE A DIFFERENCE</div>
+<h1>{{ 'Edit request' if editing else 'New improvement request' }}</h1>
+<p>Describe the opportunity. Make the next step clear.</p>
+</div>
+</div>
+<section class="panel form-panel">
+<form method="post">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+<label for="title">Request title <span>Required</span>
+</label>
+<input class="form-control" id="title" name="title" minlength="3" maxlength="100" required value="{{ item.title or '' }}" placeholder="A short, meaningful description of your idea">
+<label for="description">Description</label>
+<textarea class="form-control" id="description" name="description" rows="6" maxlength="5000" placeholder="What could be better? What would success look like?">{{ item.description or '' }}</textarea>
+<p class="field-hint">Include the problem, proposed change and expected benefit. Maximum 5,000 characters.</p>
+<div class="form-grid">{% for key,values in [('category',categories),('priority',priorities)] %}<div>
+<label for="{{ key }}">{{ key|title }}</label>
+<select class="form-select" id="{{ key }}" name="{{ key }}" required>{% for value in values %}<option {% if item[key]==value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select>
+</div>{% endfor %}<div>
+<label for="due_date">Due date <span>Optional</span>
+</label>
+<input class="form-control" id="due_date" name="due_date" type="date" value="{{ item.due_date or '' }}">
+</div>
+</div>
+<h2 class="banking-section">Banking context, ownership and outcomes</h2>
+<p class="field-hint">Use fictional examples and team names. Do not enter customer details or account information.</p>
+<div class="banking-fields">{% for key,definition in banking_fields.items() %}<div>
+<label for="{{ key }}">{{ definition[0] }}</label>
+{% if definition[1] %}<select class="form-select" id="{{ key }}" name="{{ key }}"><option value="">Not specified</option>{% for value in definition[1] %}<option {% if item[key]==value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select>
+{% else %}<input class="form-control" id="{{ key }}" name="{{ key }}" type="{{ 'date' if key == 'review_date' else 'text' }}" maxlength="1000" value="{{ item[key] or '' }}">{% endif %}
+</div>{% endfor %}</div>
+<p class="field-hint">Governance stages record a review decision; this demonstration does not enforce role-based approval.</p>
+<div class="form-actions">
+<a class="btn btn-light" href="/requests">Cancel</a>
+<button class="btn btn-primary">{{ 'Save changes' if editing else 'Create request' }}</button>
+</div>
+</form>
+</section>{% endblock %}
