@@ -1,8 +1,11 @@
 .venv/
 __pycache__/
 .pytest_cache/
-.coverage
+.coverage*
 htmlcov/
 instance/
 .idea/
 *.pyc
+.ruff_cache/
+
+instance/.session-secret
