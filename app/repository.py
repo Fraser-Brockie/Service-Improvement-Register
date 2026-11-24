@@ -92,8 +92,8 @@ def search_items(filters, page, per_page=10):
     order = {
         "newest": "id DESC",
         "oldest": "id ASC",
-        "title": "title COLLATE NOCASE",
-        "due": "due_date IS NULL, due_date",
+        "title": "title COLLATE NOCASE, id",
+        "due": "due_date IS NULL, due_date, id",
     }.get(filters.get("sort"), "id DESC")
     db = get_db()
     total = db.execute(f"SELECT COUNT(*) FROM improvement WHERE {where}", args).fetchone()[0]

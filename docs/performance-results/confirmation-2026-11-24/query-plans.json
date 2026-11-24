@@ -1,0 +1,1622 @@
+[
+  {
+    "size": 25,
+    "phase": "candidate",
+    "operation": "substring",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "needle",
+      "needle"
+    ],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "candidate",
+    "operation": "filter",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "New",
+      "High",
+      "Process"
+    ],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_summary (archived=? AND status=? AND priority=?)"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "candidate",
+    "operation": "page_first",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "candidate",
+    "operation": "page_deep",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+    "parameters": [
+      20
+    ],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "candidate",
+    "operation": "count",
+    "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_title (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "candidate",
+    "operation": "aggregation",
+    "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 6,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_summary (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "candidate",
+    "operation": "sort_title",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "candidate",
+    "operation": "sort_due",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      },
+      {
+        "id": 45,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "candidate",
+    "operation": "trend",
+    "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 9,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      },
+      {
+        "id": 14,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "baseline",
+    "operation": "substring",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "needle",
+      "needle"
+    ],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "baseline",
+    "operation": "filter",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "New",
+      "High",
+      "Process"
+    ],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=? AND status=?)"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "baseline",
+    "operation": "page_first",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "baseline",
+    "operation": "page_deep",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+    "parameters": [
+      20
+    ],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "baseline",
+    "operation": "count",
+    "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_status (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "baseline",
+    "operation": "aggregation",
+    "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 12,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "baseline",
+    "operation": "sort_title",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 41,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "baseline",
+    "operation": "sort_due",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 45,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 25,
+    "phase": "baseline",
+    "operation": "trend",
+    "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 9,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 14,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "baseline",
+    "operation": "substring",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "needle",
+      "needle"
+    ],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "baseline",
+    "operation": "filter",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "New",
+      "High",
+      "Process"
+    ],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=? AND status=?)"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "baseline",
+    "operation": "page_first",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "baseline",
+    "operation": "page_deep",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+    "parameters": [
+      90
+    ],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "baseline",
+    "operation": "count",
+    "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_status (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "baseline",
+    "operation": "aggregation",
+    "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 12,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "baseline",
+    "operation": "sort_title",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 41,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "baseline",
+    "operation": "sort_due",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 45,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "baseline",
+    "operation": "trend",
+    "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 9,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 14,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "candidate",
+    "operation": "substring",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "needle",
+      "needle"
+    ],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "candidate",
+    "operation": "filter",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "New",
+      "High",
+      "Process"
+    ],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_summary (archived=? AND status=? AND priority=?)"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "candidate",
+    "operation": "page_first",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "candidate",
+    "operation": "page_deep",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+    "parameters": [
+      90
+    ],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "candidate",
+    "operation": "count",
+    "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_title (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "candidate",
+    "operation": "aggregation",
+    "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 6,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_summary (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "candidate",
+    "operation": "sort_title",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "candidate",
+    "operation": "sort_due",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      },
+      {
+        "id": 45,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 100,
+    "phase": "candidate",
+    "operation": "trend",
+    "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 9,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      },
+      {
+        "id": 14,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "candidate",
+    "operation": "substring",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "needle",
+      "needle"
+    ],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "candidate",
+    "operation": "filter",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "New",
+      "High",
+      "Process"
+    ],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_summary (archived=? AND status=? AND priority=?)"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "candidate",
+    "operation": "page_first",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "candidate",
+    "operation": "page_deep",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+    "parameters": [
+      900
+    ],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "candidate",
+    "operation": "count",
+    "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_title (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "candidate",
+    "operation": "aggregation",
+    "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 6,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_summary (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "candidate",
+    "operation": "sort_title",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "candidate",
+    "operation": "sort_due",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      },
+      {
+        "id": 45,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "candidate",
+    "operation": "trend",
+    "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 9,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      },
+      {
+        "id": 14,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "baseline",
+    "operation": "substring",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "needle",
+      "needle"
+    ],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "baseline",
+    "operation": "filter",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "New",
+      "High",
+      "Process"
+    ],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=? AND status=?)"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "baseline",
+    "operation": "page_first",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "baseline",
+    "operation": "page_deep",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+    "parameters": [
+      900
+    ],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "baseline",
+    "operation": "count",
+    "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_status (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "baseline",
+    "operation": "aggregation",
+    "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 12,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "baseline",
+    "operation": "sort_title",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 41,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "baseline",
+    "operation": "sort_due",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 45,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 1000,
+    "phase": "baseline",
+    "operation": "trend",
+    "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 9,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 14,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "baseline",
+    "operation": "substring",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "needle",
+      "needle"
+    ],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "baseline",
+    "operation": "filter",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "New",
+      "High",
+      "Process"
+    ],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=? AND status=?)"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "baseline",
+    "operation": "page_first",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "baseline",
+    "operation": "page_deep",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+    "parameters": [
+      9000
+    ],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "baseline",
+    "operation": "count",
+    "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_status (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "baseline",
+    "operation": "aggregation",
+    "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 12,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "baseline",
+    "operation": "sort_title",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 41,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "baseline",
+    "operation": "sort_due",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 45,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "baseline",
+    "operation": "trend",
+    "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 9,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 14,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "candidate",
+    "operation": "substring",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "needle",
+      "needle"
+    ],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "candidate",
+    "operation": "filter",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "New",
+      "High",
+      "Process"
+    ],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_summary (archived=? AND status=? AND priority=?)"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "candidate",
+    "operation": "page_first",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "candidate",
+    "operation": "page_deep",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+    "parameters": [
+      9000
+    ],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "candidate",
+    "operation": "count",
+    "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_title (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "candidate",
+    "operation": "aggregation",
+    "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 6,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_summary (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "candidate",
+    "operation": "sort_title",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "candidate",
+    "operation": "sort_due",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      },
+      {
+        "id": 45,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 10000,
+    "phase": "candidate",
+    "operation": "trend",
+    "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 9,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      },
+      {
+        "id": 14,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "candidate",
+    "operation": "substring",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "needle",
+      "needle"
+    ],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "candidate",
+    "operation": "filter",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "New",
+      "High",
+      "Process"
+    ],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_summary (archived=? AND status=? AND priority=?)"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "candidate",
+    "operation": "page_first",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "candidate",
+    "operation": "page_deep",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+    "parameters": [
+      90000
+    ],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "candidate",
+    "operation": "count",
+    "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_title (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "candidate",
+    "operation": "aggregation",
+    "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 6,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_summary (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "candidate",
+    "operation": "sort_title",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "candidate",
+    "operation": "sort_due",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      },
+      {
+        "id": 45,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "candidate",
+    "operation": "trend",
+    "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 9,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_title (archived=?)"
+      },
+      {
+        "id": 14,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "baseline",
+    "operation": "substring",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "needle",
+      "needle"
+    ],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "baseline",
+    "operation": "filter",
+    "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+    "parameters": [
+      "New",
+      "High",
+      "Process"
+    ],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=? AND status=?)"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "baseline",
+    "operation": "page_first",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "baseline",
+    "operation": "page_deep",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+    "parameters": [
+      90000
+    ],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN improvement"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "baseline",
+    "operation": "count",
+    "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_status (archived=?)"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "baseline",
+    "operation": "aggregation",
+    "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 12,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "baseline",
+    "operation": "sort_title",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 41,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "baseline",
+    "operation": "sort_due",
+    "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 45,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "size": 100000,
+    "phase": "baseline",
+    "operation": "trend",
+    "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+    "parameters": [],
+    "plan": [
+      {
+        "id": 9,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+      },
+      {
+        "id": 14,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR GROUP BY"
+      }
+    ]
+  }
+]

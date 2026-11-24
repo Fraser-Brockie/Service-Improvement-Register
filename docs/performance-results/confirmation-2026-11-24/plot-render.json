@@ -1,0 +1,5 @@
+{
+  "note": "After measurement, corrected the allocation graph title to say up to 10 rows. Graphs regenerated from unchanged saved summaries; no sampling or application logic changed.",
+  "measurement_source_sha256": "2637533a703cf4322a7775b1aab0d76ca7c7b454f6a8ad10a98c043211bf8242",
+  "rendering_source_sha256": "e987f7a8b4dc49c2f3ed56c5a3909efd4e226d63ed56ac168d53f1bae3527cf5"
+}

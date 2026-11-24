@@ -60,3 +60,18 @@ Restart the app and choose Create account on the sign-in page. Register with an 
 Passwords use Werkzeug's salted scrypt hashing. Sessions use random tokens stored as hashes in SQLite, expire after eight hours, and are revoked server-side on sign-out. Forms require CSRF tokens. Five failed sign-ins for an email within fifteen minutes trigger a temporary limit; registration is also limited to five attempts per IP within fifteen minutes. Account email addresses are case-insensitive and unique. Dynamic pages use no-store caching.
 
 This is local app authentication, not Lloyds SSO. Registration is open and email addresses are not verified; password reset, MFA, company identity integration and role-based access are not implemented. Do not reuse bank credentials. For HTTPS deployment, configure SECRET_KEY and HTTPS_ONLY=1. Preserve the database and local session secret between restarts.
+
+
+## Performance evaluation
+
+The isolated performance suite evaluates 25, 100, 1,000, 10,000 and 100,000 synthetic records. It exports raw and summary CSV/JSON, cProfile/pstats reports, tracemalloc measurements, SQLite query plans, concurrent authenticated request results and labelled PNG/SVG graphs. It never opens the demonstration database.
+
+Git Bash commands:
+
+```bash
+./.venv/Scripts/python.exe -m pip install -r requirements-performance.txt
+./.venv/Scripts/python.exe scripts/benchmark.py --output docs/performance-results/my-new-run
+./.venv/Scripts/python.exe scripts/benchmark.py --reverse-phases --output docs/performance-results/my-confirmation-run
+```
+
+Use new output directories. For the exact captured dependency environment, use `requirements-performance-lock.txt` instead of the direct-dependency performance requirements. See [the measured report](docs/PERFORMANCE.md) for methods, results, trade-offs, limitations, reproduction commands, assessment mapping and required screenshots. The optional plotting dependencies are not required to run the application.

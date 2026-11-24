@@ -1,0 +1,71 @@
+         1436 function calls in 13.795 seconds
+
+   Ordered by: cumulative time
+   List reduced from 46 to 35 due to restriction <35>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      140   13.306    0.095   13.306    0.095 {method 'execute' of 'sqlite3.Connection' objects}
+       35    0.002    0.000    7.098    0.203 repository.py:82(search_items)
+        5    0.000    0.000    4.709    0.942 benchmark.py:109(generate_dashboard)
+        5    0.000    0.000    3.653    0.731 benchmark.py:132(<lambda>)
+       10    0.000    0.000    3.424    0.342 repository.py:41(summary_counts)
+        5    0.000    0.000    3.007    0.601 repository.py:107(metrics)
+        5    0.001    0.000    1.652    0.330 services.py:69(dashboard)
+        5    0.000    0.000    1.305    0.261 benchmark.py:137(<lambda>)
+        5    0.000    0.000    1.269    0.254 benchmark.py:136(<lambda>)
+        5    0.000    0.000    0.421    0.084 benchmark.py:135(<lambda>)
+        5    0.000    0.000    0.355    0.071 benchmark.py:133(<lambda>)
+       55    0.297    0.005    0.297    0.005 {method 'fetchall' of 'sqlite3.Cursor' objects}
+       20    0.180    0.009    0.180    0.009 {method '__exit__' of 'sqlite3.Connection' objects}
+        5    0.000    0.000    0.108    0.022 benchmark.py:113(create)
+        5    0.000    0.000    0.108    0.022 services.py:49(create_item)
+        5    0.000    0.000    0.108    0.022 repository.py:4(add_item)
+        5    0.000    0.000    0.054    0.011 benchmark.py:125(reset_status)
+        5    0.000    0.000    0.052    0.010 benchmark.py:118(clean_creation)
+        5    0.000    0.000    0.049    0.010 benchmark.py:140(<lambda>)
+        5    0.000    0.000    0.049    0.010 services.py:57(change_status)
+        5    0.000    0.000    0.048    0.010 repository.py:26(update_status)
+        5    0.000    0.000    0.045    0.009 benchmark.py:134(<lambda>)
+       65    0.001    0.000    0.003    0.000 db.py:16(get_db)
+       45    0.002    0.000    0.002    0.000 {method 'fetchone' of 'sqlite3.Cursor' objects}
+      130    0.000    0.000    0.001    0.000 local.py:310(__get__)
+        5    0.000    0.000    0.001    0.000 repository.py:52(get_item)
+      130    0.000    0.000    0.001    0.000 local.py:515(_get_current_object)
+      130    0.000    0.000    0.000    0.000 local.py:293(bind_f)
+       65    0.000    0.000    0.000    0.000 ctx.py:104(__contains__)
+      210    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+        5    0.000    0.000    0.000    0.000 services.py:26(validate_item)
+       35    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+       10    0.000    0.000    0.000    0.000 __init__.py:595(__init__)
+      130    0.000    0.000    0.000    0.000 {method 'get' of '_contextvars.ContextVar' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+         1436 function calls in 13.795 seconds
+
+   Ordered by: call count
+   List reduced from 46 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      210    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+      140   13.306    0.095   13.306    0.095 {method 'execute' of 'sqlite3.Connection' objects}
+      130    0.000    0.000    0.001    0.000 local.py:310(__get__)
+      130    0.000    0.000    0.000    0.000 local.py:293(bind_f)
+      130    0.000    0.000    0.001    0.000 local.py:515(_get_current_object)
+      130    0.000    0.000    0.000    0.000 {method 'get' of '_contextvars.ContextVar' objects}
+       65    0.001    0.000    0.003    0.000 db.py:16(get_db)
+       65    0.000    0.000    0.000    0.000 ctx.py:104(__contains__)
+       55    0.297    0.005    0.297    0.005 {method 'fetchall' of 'sqlite3.Cursor' objects}
+       45    0.002    0.000    0.002    0.000 {method 'fetchone' of 'sqlite3.Cursor' objects}
+       35    0.002    0.000    7.098    0.203 repository.py:82(search_items)
+       35    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+       35    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+       30    0.000    0.000    0.000    0.000 __init__.py:609(__missing__)
+       20    0.180    0.009    0.180    0.009 {method '__exit__' of 'sqlite3.Connection' objects}
+       15    0.000    0.000    0.000    0.000 {method 'strip' of 'str' objects}
+       10    0.000    0.000    0.000    0.000 __init__.py:669(update)
+       10    0.000    0.000    0.000    0.000 __init__.py:595(__init__)
+       10    0.000    0.000    3.424    0.342 repository.py:41(summary_counts)
+       10    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+
+

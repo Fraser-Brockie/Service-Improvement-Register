@@ -1,0 +1,14 @@
+{
+  "record_type": "Summary of observed tool executions; not a raw terminal transcript",
+  "date": "2026-11-24",
+  "pytest_command": "./.venv/Scripts/python.exe -m pytest --basetemp=./.pytest-tmp-performance -p no:cacheprovider --cov=app --cov-report=term-missing",
+  "pytest_exit_code": 0,
+  "tests_passed": 36,
+  "duration_seconds": 31.43,
+  "coverage_percent": 98.27,
+  "coverage_statements": 521,
+  "coverage_missed": 9,
+  "ruff_command": "./.venv/Scripts/python.exe -m ruff check .",
+  "ruff_exit_code": 0,
+  "ruff_output": "All checks passed!"
+}

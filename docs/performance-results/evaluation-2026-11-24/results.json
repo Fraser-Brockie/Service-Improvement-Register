@@ -1,0 +1,3757 @@
+{
+  "environment": {
+    "python": "3.12.6 (tags/v3.12.6:a4a2d2b, Sep  6 2024, 20:11:23) [MSC v.1940 64 bit (AMD64)]",
+    "executable": "C:\\Users\\frase\\OneDrive\\Desktop\\Service-Improvement-Register\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "ARMv8 (64-bit) Family 8 Model 1 Revision 201, Qualcomm Technologies Inc",
+    "logical_cpus": 10,
+    "sqlite": "3.45.3",
+    "packages": {
+      "Flask": "3.1.3",
+      "pytest": "9.0.3",
+      "pytest-cov": "7.0.0",
+      "ruff": "0.14.3",
+      "matplotlib": "3.10.8"
+    },
+    "git_commit": "8928cb8d550b8ade78b28f618b997cd4b9338a11",
+    "working_tree": " M app/repository.py\n M scripts/benchmark.py\n?? .pytest-tmp-bash/\n?? docs/\n?? requirements-performance.txt\n?? tests/test_performance.py\n",
+    "source_hashes": {
+      "scripts\\benchmark.py": "7c4c325f30f5e577c55f2ab4046da9f70ee65b286bf1437a32e5a744ea363232",
+      "app\\auth.py": "a9d76ef9fce2782975941c00610af77c77428c89840d2ac035f8297412f159df",
+      "app\\commands.py": "c30379aad21c9e21e37698cbb080fc67b745d647d9ad341d3c87960cb508acea",
+      "app\\community.py": "8d126a90ba82f55cd852443fbd3213425a27c44524b5c69d82bc640a54d9d2dd",
+      "app\\db.py": "5c421e439c27e5fb362c0e9f8b213c42c55d60b40209c39bd0d18d1d1129da92",
+      "app\\repository.py": "c0083fb232e42935725a638b0d2407c1cd72be16fc8dff2903673397dfe3ead6",
+      "app\\routes.py": "05a3f1a0414e110925a9e511cb3689fa5fd796cec9debc56170e5c6eb6557df6",
+      "app\\services.py": "cae9fb08acc06c8e2fa595f860e214223d95a76c4a205706a59359739981e25f",
+      "app\\__init__.py": "3a4c036e639dcd12cf4a0d0078aa273a1ddfa871edf69e0c44690d270d467885"
+    },
+    "journal_mode": "DELETE",
+    "synchronous": 2,
+    "connection_timeout_seconds": 5,
+    "timer": "perf_counter_ns; milliseconds",
+    "percentile": "nearest rank ceil(0.95*n)",
+    "started_utc": "2026-11-24T10:59:48.486604+00:00",
+    "finished_utc": "2026-11-24T11:04:35.499061+00:00",
+    "command": "scripts/benchmark.py --output docs/performance-results/evaluation-2026-11-24",
+    "configuration": {
+      "sizes": [
+        25,
+        100,
+        1000,
+        10000,
+        100000
+      ],
+      "warmups": 3,
+      "repeats": 30,
+      "memory_repeats": 3,
+      "profile_repeats": 5,
+      "workers": 4,
+      "requests_per_worker": 12,
+      "concurrency_rounds": 3,
+      "output": "docs\\performance-results\\evaluation-2026-11-24"
+    }
+  },
+  "datasets": [
+    {
+      "size": 25,
+      "sha256": "d9ff5834e63396dca30d3cdb11d9aff93d4fb016df13cc404b80d032a253810f",
+      "improvement_rows": 25,
+      "activity_rows": 25,
+      "schema": [
+        {
+          "type": "table",
+          "name": "improvement",
+          "sql": "CREATE TABLE improvement (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    title TEXT NOT NULL CHECK(length(title) BETWEEN 3 AND 100),\n    category TEXT NOT NULL,\n    priority TEXT NOT NULL,\n    status TEXT NOT NULL DEFAULT 'New',\n    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n, description TEXT NOT NULL DEFAULT '', business_area TEXT NOT NULL DEFAULT '', customer_journey TEXT NOT NULL DEFAULT '', channel TEXT NOT NULL DEFAULT '', owner TEXT NOT NULL DEFAULT '', risk_category TEXT NOT NULL DEFAULT '', customer_outcome TEXT NOT NULL DEFAULT '', success_measure TEXT NOT NULL DEFAULT '', baseline TEXT NOT NULL DEFAULT '', target TEXT NOT NULL DEFAULT '', actual TEXT NOT NULL DEFAULT '', approval_stage TEXT NOT NULL DEFAULT '', approver TEXT NOT NULL DEFAULT '', review_date TEXT NOT NULL DEFAULT '', due_date TEXT, updated_at TEXT, archived INTEGER NOT NULL DEFAULT 0)"
+        },
+        {
+          "type": "table",
+          "name": "sqlite_sequence",
+          "sql": "CREATE TABLE sqlite_sequence(name,seq)"
+        },
+        {
+          "type": "table",
+          "name": "app_user",
+          "sql": "CREATE TABLE app_user (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            email TEXT NOT NULL UNIQUE COLLATE NOCASE,\n            display_name TEXT NOT NULL,\n            password_hash TEXT NOT NULL,\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        )"
+        },
+        {
+          "type": "table",
+          "name": "auth_session",
+          "sql": "CREATE TABLE auth_session (\n            token_hash TEXT PRIMARY KEY,\n            user_id INTEGER NOT NULL REFERENCES app_user(id),\n            expires_at INTEGER NOT NULL\n        )"
+        },
+        {
+          "type": "table",
+          "name": "login_attempt",
+          "sql": "CREATE TABLE login_attempt (\n            account TEXT PRIMARY KEY,\n            attempts INTEGER NOT NULL DEFAULT 0,\n            started_at INTEGER NOT NULL\n        )"
+        },
+        {
+          "type": "table",
+          "name": "activity",
+          "sql": "CREATE TABLE activity (\n            id INTEGER PRIMARY KEY, item_id INTEGER NOT NULL REFERENCES improvement(id),\n            message TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        )"
+        },
+        {
+          "type": "index",
+          "name": "idx_improvement_active_status",
+          "sql": "CREATE INDEX idx_improvement_active_status ON improvement(archived, status)"
+        },
+        {
+          "type": "table",
+          "name": "question",
+          "sql": "CREATE TABLE question (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            title TEXT NOT NULL CHECK(length(title) BETWEEN 10 AND 160),\n            body TEXT NOT NULL CHECK(length(body) BETWEEN 20 AND 10000),\n            author TEXT NOT NULL CHECK(length(author) BETWEEN 2 AND 60),\n            topic TEXT NOT NULL,\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        , user_id INTEGER REFERENCES app_user(id))"
+        },
+        {
+          "type": "table",
+          "name": "answer",
+          "sql": "CREATE TABLE answer (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            question_id INTEGER NOT NULL REFERENCES question(id),\n            body TEXT NOT NULL CHECK(length(body) BETWEEN 10 AND 10000),\n            author TEXT NOT NULL CHECK(length(author) BETWEEN 2 AND 60),\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        , user_id INTEGER REFERENCES app_user(id))"
+        },
+        {
+          "type": "index",
+          "name": "idx_answer_question",
+          "sql": "CREATE INDEX idx_answer_question ON answer(question_id, id)"
+        },
+        {
+          "type": "index",
+          "name": "idx_activity_item",
+          "sql": "CREATE INDEX idx_activity_item ON activity(item_id, id)"
+        },
+        {
+          "type": "table",
+          "name": "sqlite_stat1",
+          "sql": "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "sha256": "dabffd07639072f6788838aa0a2d5e8d9d96e206a49c041162df8ccbd2b4e342",
+      "improvement_rows": 100,
+      "activity_rows": 100,
+      "schema": [
+        {
+          "type": "table",
+          "name": "improvement",
+          "sql": "CREATE TABLE improvement (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    title TEXT NOT NULL CHECK(length(title) BETWEEN 3 AND 100),\n    category TEXT NOT NULL,\n    priority TEXT NOT NULL,\n    status TEXT NOT NULL DEFAULT 'New',\n    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n, description TEXT NOT NULL DEFAULT '', business_area TEXT NOT NULL DEFAULT '', customer_journey TEXT NOT NULL DEFAULT '', channel TEXT NOT NULL DEFAULT '', owner TEXT NOT NULL DEFAULT '', risk_category TEXT NOT NULL DEFAULT '', customer_outcome TEXT NOT NULL DEFAULT '', success_measure TEXT NOT NULL DEFAULT '', baseline TEXT NOT NULL DEFAULT '', target TEXT NOT NULL DEFAULT '', actual TEXT NOT NULL DEFAULT '', approval_stage TEXT NOT NULL DEFAULT '', approver TEXT NOT NULL DEFAULT '', review_date TEXT NOT NULL DEFAULT '', due_date TEXT, updated_at TEXT, archived INTEGER NOT NULL DEFAULT 0)"
+        },
+        {
+          "type": "table",
+          "name": "sqlite_sequence",
+          "sql": "CREATE TABLE sqlite_sequence(name,seq)"
+        },
+        {
+          "type": "table",
+          "name": "app_user",
+          "sql": "CREATE TABLE app_user (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            email TEXT NOT NULL UNIQUE COLLATE NOCASE,\n            display_name TEXT NOT NULL,\n            password_hash TEXT NOT NULL,\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        )"
+        },
+        {
+          "type": "table",
+          "name": "auth_session",
+          "sql": "CREATE TABLE auth_session (\n            token_hash TEXT PRIMARY KEY,\n            user_id INTEGER NOT NULL REFERENCES app_user(id),\n            expires_at INTEGER NOT NULL\n        )"
+        },
+        {
+          "type": "table",
+          "name": "login_attempt",
+          "sql": "CREATE TABLE login_attempt (\n            account TEXT PRIMARY KEY,\n            attempts INTEGER NOT NULL DEFAULT 0,\n            started_at INTEGER NOT NULL\n        )"
+        },
+        {
+          "type": "table",
+          "name": "activity",
+          "sql": "CREATE TABLE activity (\n            id INTEGER PRIMARY KEY, item_id INTEGER NOT NULL REFERENCES improvement(id),\n            message TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        )"
+        },
+        {
+          "type": "index",
+          "name": "idx_improvement_active_status",
+          "sql": "CREATE INDEX idx_improvement_active_status ON improvement(archived, status)"
+        },
+        {
+          "type": "table",
+          "name": "question",
+          "sql": "CREATE TABLE question (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            title TEXT NOT NULL CHECK(length(title) BETWEEN 10 AND 160),\n            body TEXT NOT NULL CHECK(length(body) BETWEEN 20 AND 10000),\n            author TEXT NOT NULL CHECK(length(author) BETWEEN 2 AND 60),\n            topic TEXT NOT NULL,\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        , user_id INTEGER REFERENCES app_user(id))"
+        },
+        {
+          "type": "table",
+          "name": "answer",
+          "sql": "CREATE TABLE answer (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            question_id INTEGER NOT NULL REFERENCES question(id),\n            body TEXT NOT NULL CHECK(length(body) BETWEEN 10 AND 10000),\n            author TEXT NOT NULL CHECK(length(author) BETWEEN 2 AND 60),\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        , user_id INTEGER REFERENCES app_user(id))"
+        },
+        {
+          "type": "index",
+          "name": "idx_answer_question",
+          "sql": "CREATE INDEX idx_answer_question ON answer(question_id, id)"
+        },
+        {
+          "type": "index",
+          "name": "idx_activity_item",
+          "sql": "CREATE INDEX idx_activity_item ON activity(item_id, id)"
+        },
+        {
+          "type": "table",
+          "name": "sqlite_stat1",
+          "sql": "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "sha256": "036837fe1735cc8f545bda04f39b5e6278e663fa6204a45b49e9394759807f13",
+      "improvement_rows": 1000,
+      "activity_rows": 1000,
+      "schema": [
+        {
+          "type": "table",
+          "name": "improvement",
+          "sql": "CREATE TABLE improvement (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    title TEXT NOT NULL CHECK(length(title) BETWEEN 3 AND 100),\n    category TEXT NOT NULL,\n    priority TEXT NOT NULL,\n    status TEXT NOT NULL DEFAULT 'New',\n    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n, description TEXT NOT NULL DEFAULT '', business_area TEXT NOT NULL DEFAULT '', customer_journey TEXT NOT NULL DEFAULT '', channel TEXT NOT NULL DEFAULT '', owner TEXT NOT NULL DEFAULT '', risk_category TEXT NOT NULL DEFAULT '', customer_outcome TEXT NOT NULL DEFAULT '', success_measure TEXT NOT NULL DEFAULT '', baseline TEXT NOT NULL DEFAULT '', target TEXT NOT NULL DEFAULT '', actual TEXT NOT NULL DEFAULT '', approval_stage TEXT NOT NULL DEFAULT '', approver TEXT NOT NULL DEFAULT '', review_date TEXT NOT NULL DEFAULT '', due_date TEXT, updated_at TEXT, archived INTEGER NOT NULL DEFAULT 0)"
+        },
+        {
+          "type": "table",
+          "name": "sqlite_sequence",
+          "sql": "CREATE TABLE sqlite_sequence(name,seq)"
+        },
+        {
+          "type": "table",
+          "name": "app_user",
+          "sql": "CREATE TABLE app_user (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            email TEXT NOT NULL UNIQUE COLLATE NOCASE,\n            display_name TEXT NOT NULL,\n            password_hash TEXT NOT NULL,\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        )"
+        },
+        {
+          "type": "table",
+          "name": "auth_session",
+          "sql": "CREATE TABLE auth_session (\n            token_hash TEXT PRIMARY KEY,\n            user_id INTEGER NOT NULL REFERENCES app_user(id),\n            expires_at INTEGER NOT NULL\n        )"
+        },
+        {
+          "type": "table",
+          "name": "login_attempt",
+          "sql": "CREATE TABLE login_attempt (\n            account TEXT PRIMARY KEY,\n            attempts INTEGER NOT NULL DEFAULT 0,\n            started_at INTEGER NOT NULL\n        )"
+        },
+        {
+          "type": "table",
+          "name": "activity",
+          "sql": "CREATE TABLE activity (\n            id INTEGER PRIMARY KEY, item_id INTEGER NOT NULL REFERENCES improvement(id),\n            message TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        )"
+        },
+        {
+          "type": "index",
+          "name": "idx_improvement_active_status",
+          "sql": "CREATE INDEX idx_improvement_active_status ON improvement(archived, status)"
+        },
+        {
+          "type": "table",
+          "name": "question",
+          "sql": "CREATE TABLE question (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            title TEXT NOT NULL CHECK(length(title) BETWEEN 10 AND 160),\n            body TEXT NOT NULL CHECK(length(body) BETWEEN 20 AND 10000),\n            author TEXT NOT NULL CHECK(length(author) BETWEEN 2 AND 60),\n            topic TEXT NOT NULL,\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        , user_id INTEGER REFERENCES app_user(id))"
+        },
+        {
+          "type": "table",
+          "name": "answer",
+          "sql": "CREATE TABLE answer (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            question_id INTEGER NOT NULL REFERENCES question(id),\n            body TEXT NOT NULL CHECK(length(body) BETWEEN 10 AND 10000),\n            author TEXT NOT NULL CHECK(length(author) BETWEEN 2 AND 60),\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        , user_id INTEGER REFERENCES app_user(id))"
+        },
+        {
+          "type": "index",
+          "name": "idx_answer_question",
+          "sql": "CREATE INDEX idx_answer_question ON answer(question_id, id)"
+        },
+        {
+          "type": "index",
+          "name": "idx_activity_item",
+          "sql": "CREATE INDEX idx_activity_item ON activity(item_id, id)"
+        },
+        {
+          "type": "table",
+          "name": "sqlite_stat1",
+          "sql": "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "sha256": "a9b20ae0bd1d6a56025aa9627576ffba4c9abb0d781ca794db84aa584f01556a",
+      "improvement_rows": 10000,
+      "activity_rows": 10000,
+      "schema": [
+        {
+          "type": "table",
+          "name": "improvement",
+          "sql": "CREATE TABLE improvement (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    title TEXT NOT NULL CHECK(length(title) BETWEEN 3 AND 100),\n    category TEXT NOT NULL,\n    priority TEXT NOT NULL,\n    status TEXT NOT NULL DEFAULT 'New',\n    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n, description TEXT NOT NULL DEFAULT '', business_area TEXT NOT NULL DEFAULT '', customer_journey TEXT NOT NULL DEFAULT '', channel TEXT NOT NULL DEFAULT '', owner TEXT NOT NULL DEFAULT '', risk_category TEXT NOT NULL DEFAULT '', customer_outcome TEXT NOT NULL DEFAULT '', success_measure TEXT NOT NULL DEFAULT '', baseline TEXT NOT NULL DEFAULT '', target TEXT NOT NULL DEFAULT '', actual TEXT NOT NULL DEFAULT '', approval_stage TEXT NOT NULL DEFAULT '', approver TEXT NOT NULL DEFAULT '', review_date TEXT NOT NULL DEFAULT '', due_date TEXT, updated_at TEXT, archived INTEGER NOT NULL DEFAULT 0)"
+        },
+        {
+          "type": "table",
+          "name": "sqlite_sequence",
+          "sql": "CREATE TABLE sqlite_sequence(name,seq)"
+        },
+        {
+          "type": "table",
+          "name": "app_user",
+          "sql": "CREATE TABLE app_user (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            email TEXT NOT NULL UNIQUE COLLATE NOCASE,\n            display_name TEXT NOT NULL,\n            password_hash TEXT NOT NULL,\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        )"
+        },
+        {
+          "type": "table",
+          "name": "auth_session",
+          "sql": "CREATE TABLE auth_session (\n            token_hash TEXT PRIMARY KEY,\n            user_id INTEGER NOT NULL REFERENCES app_user(id),\n            expires_at INTEGER NOT NULL\n        )"
+        },
+        {
+          "type": "table",
+          "name": "login_attempt",
+          "sql": "CREATE TABLE login_attempt (\n            account TEXT PRIMARY KEY,\n            attempts INTEGER NOT NULL DEFAULT 0,\n            started_at INTEGER NOT NULL\n        )"
+        },
+        {
+          "type": "table",
+          "name": "activity",
+          "sql": "CREATE TABLE activity (\n            id INTEGER PRIMARY KEY, item_id INTEGER NOT NULL REFERENCES improvement(id),\n            message TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        )"
+        },
+        {
+          "type": "index",
+          "name": "idx_improvement_active_status",
+          "sql": "CREATE INDEX idx_improvement_active_status ON improvement(archived, status)"
+        },
+        {
+          "type": "table",
+          "name": "question",
+          "sql": "CREATE TABLE question (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            title TEXT NOT NULL CHECK(length(title) BETWEEN 10 AND 160),\n            body TEXT NOT NULL CHECK(length(body) BETWEEN 20 AND 10000),\n            author TEXT NOT NULL CHECK(length(author) BETWEEN 2 AND 60),\n            topic TEXT NOT NULL,\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        , user_id INTEGER REFERENCES app_user(id))"
+        },
+        {
+          "type": "table",
+          "name": "answer",
+          "sql": "CREATE TABLE answer (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            question_id INTEGER NOT NULL REFERENCES question(id),\n            body TEXT NOT NULL CHECK(length(body) BETWEEN 10 AND 10000),\n            author TEXT NOT NULL CHECK(length(author) BETWEEN 2 AND 60),\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        , user_id INTEGER REFERENCES app_user(id))"
+        },
+        {
+          "type": "index",
+          "name": "idx_answer_question",
+          "sql": "CREATE INDEX idx_answer_question ON answer(question_id, id)"
+        },
+        {
+          "type": "index",
+          "name": "idx_activity_item",
+          "sql": "CREATE INDEX idx_activity_item ON activity(item_id, id)"
+        },
+        {
+          "type": "table",
+          "name": "sqlite_stat1",
+          "sql": "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "sha256": "6170aee60cfd2137dd6a8f89ebf94e0b8c3dfac8e78a9fe46fd67fd90bdc7562",
+      "improvement_rows": 100000,
+      "activity_rows": 100000,
+      "schema": [
+        {
+          "type": "table",
+          "name": "improvement",
+          "sql": "CREATE TABLE improvement (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    title TEXT NOT NULL CHECK(length(title) BETWEEN 3 AND 100),\n    category TEXT NOT NULL,\n    priority TEXT NOT NULL,\n    status TEXT NOT NULL DEFAULT 'New',\n    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n, description TEXT NOT NULL DEFAULT '', business_area TEXT NOT NULL DEFAULT '', customer_journey TEXT NOT NULL DEFAULT '', channel TEXT NOT NULL DEFAULT '', owner TEXT NOT NULL DEFAULT '', risk_category TEXT NOT NULL DEFAULT '', customer_outcome TEXT NOT NULL DEFAULT '', success_measure TEXT NOT NULL DEFAULT '', baseline TEXT NOT NULL DEFAULT '', target TEXT NOT NULL DEFAULT '', actual TEXT NOT NULL DEFAULT '', approval_stage TEXT NOT NULL DEFAULT '', approver TEXT NOT NULL DEFAULT '', review_date TEXT NOT NULL DEFAULT '', due_date TEXT, updated_at TEXT, archived INTEGER NOT NULL DEFAULT 0)"
+        },
+        {
+          "type": "table",
+          "name": "sqlite_sequence",
+          "sql": "CREATE TABLE sqlite_sequence(name,seq)"
+        },
+        {
+          "type": "table",
+          "name": "app_user",
+          "sql": "CREATE TABLE app_user (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            email TEXT NOT NULL UNIQUE COLLATE NOCASE,\n            display_name TEXT NOT NULL,\n            password_hash TEXT NOT NULL,\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        )"
+        },
+        {
+          "type": "table",
+          "name": "auth_session",
+          "sql": "CREATE TABLE auth_session (\n            token_hash TEXT PRIMARY KEY,\n            user_id INTEGER NOT NULL REFERENCES app_user(id),\n            expires_at INTEGER NOT NULL\n        )"
+        },
+        {
+          "type": "table",
+          "name": "login_attempt",
+          "sql": "CREATE TABLE login_attempt (\n            account TEXT PRIMARY KEY,\n            attempts INTEGER NOT NULL DEFAULT 0,\n            started_at INTEGER NOT NULL\n        )"
+        },
+        {
+          "type": "table",
+          "name": "activity",
+          "sql": "CREATE TABLE activity (\n            id INTEGER PRIMARY KEY, item_id INTEGER NOT NULL REFERENCES improvement(id),\n            message TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        )"
+        },
+        {
+          "type": "index",
+          "name": "idx_improvement_active_status",
+          "sql": "CREATE INDEX idx_improvement_active_status ON improvement(archived, status)"
+        },
+        {
+          "type": "table",
+          "name": "question",
+          "sql": "CREATE TABLE question (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            title TEXT NOT NULL CHECK(length(title) BETWEEN 10 AND 160),\n            body TEXT NOT NULL CHECK(length(body) BETWEEN 20 AND 10000),\n            author TEXT NOT NULL CHECK(length(author) BETWEEN 2 AND 60),\n            topic TEXT NOT NULL,\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        , user_id INTEGER REFERENCES app_user(id))"
+        },
+        {
+          "type": "table",
+          "name": "answer",
+          "sql": "CREATE TABLE answer (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            question_id INTEGER NOT NULL REFERENCES question(id),\n            body TEXT NOT NULL CHECK(length(body) BETWEEN 10 AND 10000),\n            author TEXT NOT NULL CHECK(length(author) BETWEEN 2 AND 60),\n            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP\n        , user_id INTEGER REFERENCES app_user(id))"
+        },
+        {
+          "type": "index",
+          "name": "idx_answer_question",
+          "sql": "CREATE INDEX idx_answer_question ON answer(question_id, id)"
+        },
+        {
+          "type": "index",
+          "name": "idx_activity_item",
+          "sql": "CREATE INDEX idx_activity_item ON activity(item_id, id)"
+        },
+        {
+          "type": "table",
+          "name": "sqlite_stat1",
+          "sql": "CREATE TABLE sqlite_stat1(tbl,idx,stat)"
+        }
+      ]
+    }
+  ],
+  "timings": [
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "aggregation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 77824,
+      "live_database_bytes": 77824,
+      "mean": 0.20476333333333332,
+      "median": 0.14455,
+      "minimum": 0.1017,
+      "maximum": 0.5165,
+      "p95": 0.4657
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "combined_filter",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 77824,
+      "live_database_bytes": 77824,
+      "mean": 0.28730333333333335,
+      "median": 0.19735,
+      "minimum": 0.1447,
+      "maximum": 1.0953,
+      "p95": 0.5634
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "dashboard",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 77824,
+      "live_database_bytes": 77824,
+      "mean": 0.9601533333333333,
+      "median": 0.8645,
+      "minimum": 0.5806,
+      "maximum": 1.9838,
+      "p95": 1.8196
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "page_deep",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 77824,
+      "live_database_bytes": 77824,
+      "mean": 0.2524766666666667,
+      "median": 0.21855000000000002,
+      "minimum": 0.1477,
+      "maximum": 0.4662,
+      "p95": 0.4069
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "page_first",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 77824,
+      "live_database_bytes": 77824,
+      "mean": 0.3452266666666667,
+      "median": 0.25125,
+      "minimum": 0.2019,
+      "maximum": 0.8025,
+      "p95": 0.7266
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "request_creation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 77824,
+      "live_database_bytes": 77824,
+      "mean": 15.717173333333333,
+      "median": 13.37735,
+      "minimum": 8.2905,
+      "maximum": 46.2594,
+      "p95": 25.731
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "sort_due",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 77824,
+      "live_database_bytes": 77824,
+      "mean": 0.36876333333333333,
+      "median": 0.30935,
+      "minimum": 0.245,
+      "maximum": 0.922,
+      "p95": 0.6802
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "sort_title",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 77824,
+      "live_database_bytes": 77824,
+      "mean": 0.37644666666666665,
+      "median": 0.3167,
+      "minimum": 0.2264,
+      "maximum": 0.7575,
+      "p95": 0.7413
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "status_update",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 77824,
+      "live_database_bytes": 77824,
+      "mean": 16.396923333333334,
+      "median": 14.65245,
+      "minimum": 8.3463,
+      "maximum": 30.4938,
+      "p95": 28.7586
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "substring_search",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 77824,
+      "live_database_bytes": 77824,
+      "mean": 0.35246,
+      "median": 0.27855,
+      "minimum": 0.2034,
+      "maximum": 0.8582,
+      "p95": 0.7921
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "aggregation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 86016,
+      "live_database_bytes": 86016,
+      "mean": 0.22147666666666666,
+      "median": 0.20984999999999998,
+      "minimum": 0.089,
+      "maximum": 0.7587,
+      "p95": 0.3924
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "combined_filter",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 86016,
+      "live_database_bytes": 86016,
+      "mean": 0.34207,
+      "median": 0.2935,
+      "minimum": 0.1457,
+      "maximum": 0.9215,
+      "p95": 0.8333
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "dashboard",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 86016,
+      "live_database_bytes": 86016,
+      "mean": 1.37664,
+      "median": 1.30255,
+      "minimum": 0.7432,
+      "maximum": 3.3595,
+      "p95": 1.9846
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "page_deep",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 86016,
+      "live_database_bytes": 86016,
+      "mean": 0.50514,
+      "median": 0.37865000000000004,
+      "minimum": 0.1762,
+      "maximum": 1.9335,
+      "p95": 1.4653
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "page_first",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 86016,
+      "live_database_bytes": 86016,
+      "mean": 0.48969,
+      "median": 0.49645,
+      "minimum": 0.2201,
+      "maximum": 0.8285,
+      "p95": 0.7492
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "request_creation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 86016,
+      "live_database_bytes": 86016,
+      "mean": 13.2707,
+      "median": 13.147400000000001,
+      "minimum": 8.1322,
+      "maximum": 25.1622,
+      "p95": 23.2179
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "sort_due",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 86016,
+      "live_database_bytes": 86016,
+      "mean": 0.5885466666666667,
+      "median": 0.53725,
+      "minimum": 0.303,
+      "maximum": 1.1311,
+      "p95": 1.0664
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "sort_title",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 86016,
+      "live_database_bytes": 86016,
+      "mean": 0.48514666666666667,
+      "median": 0.5105500000000001,
+      "minimum": 0.2344,
+      "maximum": 0.7899,
+      "p95": 0.7629
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "status_update",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 86016,
+      "live_database_bytes": 86016,
+      "mean": 12.228263333333333,
+      "median": 10.7981,
+      "minimum": 7.8116,
+      "maximum": 25.8024,
+      "p95": 23.6701
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "substring_search",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 86016,
+      "live_database_bytes": 86016,
+      "mean": 0.5030333333333333,
+      "median": 0.447,
+      "minimum": 0.2082,
+      "maximum": 1.4686,
+      "p95": 0.983
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "aggregation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 114688,
+      "mean": 0.3427366666666667,
+      "median": 0.35675,
+      "minimum": 0.1401,
+      "maximum": 0.5993,
+      "p95": 0.5519
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "combined_filter",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 114688,
+      "mean": 0.40410666666666667,
+      "median": 0.3853,
+      "minimum": 0.1847,
+      "maximum": 1.0186,
+      "p95": 0.71
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "dashboard",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 114688,
+      "mean": 1.8157633333333334,
+      "median": 1.75535,
+      "minimum": 0.853,
+      "maximum": 3.3607,
+      "p95": 3.2083
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "page_deep",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 114688,
+      "mean": 0.37121,
+      "median": 0.32665,
+      "minimum": 0.1449,
+      "maximum": 1.9391,
+      "p95": 0.5999
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "page_first",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 114688,
+      "mean": 0.56618,
+      "median": 0.5138,
+      "minimum": 0.2145,
+      "maximum": 2.928,
+      "p95": 0.8213
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "request_creation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 114688,
+      "mean": 12.74149,
+      "median": 12.747499999999999,
+      "minimum": 7.8893,
+      "maximum": 20.6646,
+      "p95": 17.7773
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "sort_due",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 114688,
+      "mean": 0.73336,
+      "median": 0.6790499999999999,
+      "minimum": 0.2777,
+      "maximum": 2.4492,
+      "p95": 1.4831
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "sort_title",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 114688,
+      "mean": 0.6490766666666666,
+      "median": 0.63435,
+      "minimum": 0.2827,
+      "maximum": 1.5495,
+      "p95": 1.5211
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "status_update",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 114688,
+      "mean": 11.32364,
+      "median": 10.074850000000001,
+      "minimum": 7.8712,
+      "maximum": 19.5123,
+      "p95": 16.7111
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "substring_search",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 114688,
+      "mean": 0.9072266666666666,
+      "median": 0.8176,
+      "minimum": 0.4327,
+      "maximum": 2.2207,
+      "p95": 1.5589
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "aggregation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 122880,
+      "mean": 0.24349666666666667,
+      "median": 0.2313,
+      "minimum": 0.1035,
+      "maximum": 0.4624,
+      "p95": 0.4061
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "combined_filter",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 122880,
+      "mean": 0.53027,
+      "median": 0.44965,
+      "minimum": 0.1812,
+      "maximum": 2.5984,
+      "p95": 0.9524
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "dashboard",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 122880,
+      "mean": 1.9434233333333333,
+      "median": 1.83655,
+      "minimum": 0.7066,
+      "maximum": 6.4274,
+      "p95": 3.5158
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "page_deep",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 122880,
+      "mean": 0.42055,
+      "median": 0.39275000000000004,
+      "minimum": 0.1758,
+      "maximum": 1.6189,
+      "p95": 0.7876
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "page_first",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 122880,
+      "mean": 0.6367266666666667,
+      "median": 0.50145,
+      "minimum": 0.2291,
+      "maximum": 1.9895,
+      "p95": 1.8213
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "request_creation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 122880,
+      "mean": 10.750513333333334,
+      "median": 9.64235,
+      "minimum": 7.4266,
+      "maximum": 16.214,
+      "p95": 15.1759
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "sort_due",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 122880,
+      "mean": 0.7255666666666667,
+      "median": 0.62555,
+      "minimum": 0.3152,
+      "maximum": 2.9,
+      "p95": 1.5398
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "sort_title",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 122880,
+      "mean": 0.63483,
+      "median": 0.48955,
+      "minimum": 0.2193,
+      "maximum": 3.4826,
+      "p95": 1.2651
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "status_update",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 122880,
+      "mean": 10.945876666666667,
+      "median": 9.470600000000001,
+      "minimum": 7.7876,
+      "maximum": 27.1006,
+      "p95": 15.5288
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "substring_search",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 122880,
+      "live_database_bytes": 122880,
+      "mean": 1.0172,
+      "median": 0.9390499999999999,
+      "minimum": 0.4397,
+      "maximum": 2.3097,
+      "p95": 1.8021
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "aggregation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 520192,
+      "live_database_bytes": 520192,
+      "mean": 1.4658633333333333,
+      "median": 1.3159,
+      "minimum": 0.7571,
+      "maximum": 5.6761,
+      "p95": 2.6856
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "combined_filter",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 520192,
+      "live_database_bytes": 520192,
+      "mean": 1.37771,
+      "median": 0.8963,
+      "minimum": 0.3944,
+      "maximum": 8.79,
+      "p95": 5.3518
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "dashboard",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 520192,
+      "live_database_bytes": 520192,
+      "mean": 5.42194,
+      "median": 4.4789,
+      "minimum": 3.0667,
+      "maximum": 14.7088,
+      "p95": 12.3059
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "page_deep",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 520192,
+      "live_database_bytes": 520192,
+      "mean": 1.10917,
+      "median": 0.7235,
+      "minimum": 0.2639,
+      "maximum": 5.0846,
+      "p95": 4.0149
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "page_first",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 520192,
+      "live_database_bytes": 520192,
+      "mean": 0.8009333333333334,
+      "median": 0.694,
+      "minimum": 0.3452,
+      "maximum": 2.7862,
+      "p95": 1.8737
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "request_creation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 520192,
+      "live_database_bytes": 520192,
+      "mean": 13.52704,
+      "median": 11.260349999999999,
+      "minimum": 8.102,
+      "maximum": 30.7135,
+      "p95": 30.0194
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "sort_due",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 520192,
+      "live_database_bytes": 520192,
+      "mean": 1.6741733333333333,
+      "median": 1.1766,
+      "minimum": 0.5505,
+      "maximum": 9.4821,
+      "p95": 3.7163
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "sort_title",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 520192,
+      "live_database_bytes": 520192,
+      "mean": 1.23294,
+      "median": 1.05895,
+      "minimum": 0.5395,
+      "maximum": 3.9781,
+      "p95": 2.6249
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "status_update",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 520192,
+      "live_database_bytes": 520192,
+      "mean": 12.557903333333334,
+      "median": 9.89105,
+      "minimum": 8.442,
+      "maximum": 43.3501,
+      "p95": 23.3301
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "substring_search",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 520192,
+      "live_database_bytes": 520192,
+      "mean": 6.992356666666667,
+      "median": 5.70415,
+      "minimum": 3.9153,
+      "maximum": 16.002,
+      "p95": 15.3115
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "aggregation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 585728,
+      "live_database_bytes": 585728,
+      "mean": 0.39803666666666665,
+      "median": 0.3482,
+      "minimum": 0.18,
+      "maximum": 0.86,
+      "p95": 0.7863
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "combined_filter",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 585728,
+      "live_database_bytes": 585728,
+      "mean": 0.8556766666666666,
+      "median": 0.56125,
+      "minimum": 0.2737,
+      "maximum": 7.8216,
+      "p95": 1.6039
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "dashboard",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 585728,
+      "live_database_bytes": 585728,
+      "mean": 3.22215,
+      "median": 3.22425,
+      "minimum": 1.676,
+      "maximum": 5.7863,
+      "p95": 4.8836
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "page_deep",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 585728,
+      "live_database_bytes": 585728,
+      "mean": 0.8699666666666667,
+      "median": 0.7253000000000001,
+      "minimum": 0.3267,
+      "maximum": 5.2989,
+      "p95": 1.3939
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "page_first",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 585728,
+      "live_database_bytes": 585728,
+      "mean": 0.6375833333333334,
+      "median": 0.59215,
+      "minimum": 0.2656,
+      "maximum": 1.9246,
+      "p95": 1.2531
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "request_creation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 585728,
+      "live_database_bytes": 585728,
+      "mean": 11.92613,
+      "median": 11.0724,
+      "minimum": 8.4157,
+      "maximum": 18.2669,
+      "p95": 18.0973
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "sort_due",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 585728,
+      "live_database_bytes": 585728,
+      "mean": 1.13073,
+      "median": 1.0754000000000001,
+      "minimum": 0.5927,
+      "maximum": 1.849,
+      "p95": 1.8143
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "sort_title",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 585728,
+      "live_database_bytes": 585728,
+      "mean": 0.5842933333333333,
+      "median": 0.4977,
+      "minimum": 0.2478,
+      "maximum": 2.5375,
+      "p95": 0.9944
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "status_update",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 585728,
+      "live_database_bytes": 585728,
+      "mean": 13.89141,
+      "median": 12.274650000000001,
+      "minimum": 8.371,
+      "maximum": 27.1421,
+      "p95": 24.3228
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "substring_search",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 585728,
+      "live_database_bytes": 585728,
+      "mean": 5.47599,
+      "median": 5.1504,
+      "minimum": 3.375,
+      "maximum": 10.3858,
+      "p95": 7.5159
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "aggregation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5165056,
+      "live_database_bytes": 4612096,
+      "mean": 29.512053333333334,
+      "median": 25.4621,
+      "minimum": 20.4297,
+      "maximum": 119.1814,
+      "p95": 40.5087
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "combined_filter",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5165056,
+      "live_database_bytes": 4612096,
+      "mean": 7.44323,
+      "median": 7.54865,
+      "minimum": 3.1959,
+      "maximum": 11.3557,
+      "p95": 11.0158
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "dashboard",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5165056,
+      "live_database_bytes": 4612096,
+      "mean": 80.44428666666667,
+      "median": 79.92805,
+      "minimum": 70.0614,
+      "maximum": 96.2124,
+      "p95": 95.6117
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "page_deep",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5165056,
+      "live_database_bytes": 4612096,
+      "mean": 7.79809,
+      "median": 7.1882,
+      "minimum": 3.9556,
+      "maximum": 20.9311,
+      "p95": 12.8957
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "page_first",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5165056,
+      "live_database_bytes": 4612096,
+      "mean": 1.82243,
+      "median": 1.6067,
+      "minimum": 0.7476,
+      "maximum": 5.7279,
+      "p95": 4.7363
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "request_creation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5165056,
+      "live_database_bytes": 4612096,
+      "mean": 12.904276666666666,
+      "median": 10.8854,
+      "minimum": 7.6831,
+      "maximum": 30.0201,
+      "p95": 23.776
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "sort_due",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5165056,
+      "live_database_bytes": 4612096,
+      "mean": 25.49024,
+      "median": 25.023600000000002,
+      "minimum": 14.7431,
+      "maximum": 39.9557,
+      "p95": 32.9864
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "sort_title",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5165056,
+      "live_database_bytes": 4612096,
+      "mean": 25.00862,
+      "median": 22.126150000000003,
+      "minimum": 17.459,
+      "maximum": 99.523,
+      "p95": 31.5465
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "status_update",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5165056,
+      "live_database_bytes": 4612096,
+      "mean": 11.890676666666666,
+      "median": 10.69565,
+      "minimum": 8.5167,
+      "maximum": 19.6978,
+      "p95": 18.8112
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "substring_search",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5165056,
+      "live_database_bytes": 4612096,
+      "mean": 69.05242333333334,
+      "median": 66.47255,
+      "minimum": 55.6078,
+      "maximum": 115.6659,
+      "p95": 102.2148
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "aggregation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5156864,
+      "live_database_bytes": 5156864,
+      "mean": 3.60658,
+      "median": 2.07165,
+      "minimum": 1.2524,
+      "maximum": 41.8253,
+      "p95": 5.9427
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "combined_filter",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5156864,
+      "live_database_bytes": 5156864,
+      "mean": 5.323193333333333,
+      "median": 4.74305,
+      "minimum": 3.0517,
+      "maximum": 11.199,
+      "p95": 10.52
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "dashboard",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5156864,
+      "live_database_bytes": 5156864,
+      "mean": 30.71884,
+      "median": 28.87845,
+      "minimum": 22.3664,
+      "maximum": 54.4597,
+      "p95": 40.4845
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "page_deep",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5156864,
+      "live_database_bytes": 5156864,
+      "mean": 9.69954,
+      "median": 7.0817,
+      "minimum": 4.7539,
+      "maximum": 47.0458,
+      "p95": 21.8762
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "page_first",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5156864,
+      "live_database_bytes": 5156864,
+      "mean": 1.5596666666666668,
+      "median": 1.54115,
+      "minimum": 0.8462,
+      "maximum": 3.3725,
+      "p95": 2.2735
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "request_creation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5156864,
+      "live_database_bytes": 5156864,
+      "mean": 16.179213333333333,
+      "median": 14.167449999999999,
+      "minimum": 8.9866,
+      "maximum": 34.1878,
+      "p95": 29.883
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "sort_due",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5156864,
+      "live_database_bytes": 5156864,
+      "mean": 10.99519,
+      "median": 10.28175,
+      "minimum": 6.992,
+      "maximum": 25.7409,
+      "p95": 17.5845
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "sort_title",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5156864,
+      "live_database_bytes": 5156864,
+      "mean": 1.8055733333333333,
+      "median": 1.4882,
+      "minimum": 0.7552,
+      "maximum": 6.0158,
+      "p95": 3.5227
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "status_update",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5156864,
+      "live_database_bytes": 5156864,
+      "mean": 42.48934333333333,
+      "median": 16.3691,
+      "minimum": 9.1434,
+      "maximum": 684.3197,
+      "p95": 50.1457
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "substring_search",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 5156864,
+      "live_database_bytes": 5156864,
+      "mean": 60.95923,
+      "median": 57.89265,
+      "minimum": 42.2312,
+      "maximum": 115.5874,
+      "p95": 87.2714
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "aggregation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 45953024,
+      "live_database_bytes": 45953024,
+      "mean": 342.60568,
+      "median": 332.80269999999996,
+      "minimum": 288.978,
+      "maximum": 503.3775,
+      "p95": 459.5372
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "combined_filter",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 45953024,
+      "live_database_bytes": 45953024,
+      "mean": 81.89006666666667,
+      "median": 76.51995,
+      "minimum": 57.8517,
+      "maximum": 210.9436,
+      "p95": 128.115
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "dashboard",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 45953024,
+      "live_database_bytes": 45953024,
+      "mean": 952.46841,
+      "median": 917.3476499999999,
+      "minimum": 858.9217,
+      "maximum": 1270.6651,
+      "p95": 1181.6203
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "page_deep",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 45953024,
+      "live_database_bytes": 45953024,
+      "mean": 92.71076666666667,
+      "median": 90.25305,
+      "minimum": 74.9236,
+      "maximum": 133.6671,
+      "p95": 128.6765
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "page_first",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 45953024,
+      "live_database_bytes": 45953024,
+      "mean": 10.915656666666667,
+      "median": 10.1335,
+      "minimum": 6.0533,
+      "maximum": 34.0937,
+      "p95": 16.6284
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "request_creation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 45953024,
+      "live_database_bytes": 45953024,
+      "mean": 19.14332,
+      "median": 13.709700000000002,
+      "minimum": 7.8452,
+      "maximum": 130.6279,
+      "p95": 31.5871
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "sort_due",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 45953024,
+      "live_database_bytes": 45953024,
+      "mean": 273.28357,
+      "median": 265.2437,
+      "minimum": 220.8821,
+      "maximum": 397.5245,
+      "p95": 379.1708
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "sort_title",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 45953024,
+      "live_database_bytes": 45953024,
+      "mean": 258.65523666666667,
+      "median": 246.076,
+      "minimum": 223.8534,
+      "maximum": 409.6239,
+      "p95": 318.3126
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "status_update",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 45953024,
+      "live_database_bytes": 45953024,
+      "mean": 14.023753333333334,
+      "median": 13.41085,
+      "minimum": 7.3507,
+      "maximum": 45.9577,
+      "p95": 27.9211
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "substring_search",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 45953024,
+      "live_database_bytes": 45953024,
+      "mean": 782.0035933333334,
+      "median": 766.1171999999999,
+      "minimum": 646.2727,
+      "maximum": 1074.7896,
+      "p95": 1027.7813
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "aggregation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 51470336,
+      "live_database_bytes": 51470336,
+      "mean": 23.872233333333334,
+      "median": 21.971049999999998,
+      "minimum": 16.9752,
+      "maximum": 87.689,
+      "p95": 27.8591
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "combined_filter",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 51470336,
+      "live_database_bytes": 51470336,
+      "mean": 50.12195,
+      "median": 51.09075,
+      "minimum": 35.2901,
+      "maximum": 77.7985,
+      "p95": 65.271
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "dashboard",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 51470336,
+      "live_database_bytes": 51470336,
+      "mean": 347.3743666666667,
+      "median": 332.6971,
+      "minimum": 290.2748,
+      "maximum": 579.6727,
+      "p95": 439.2314
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "page_deep",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 51470336,
+      "live_database_bytes": 51470336,
+      "mean": 96.70982,
+      "median": 94.01804999999999,
+      "minimum": 76.0941,
+      "maximum": 174.0551,
+      "p95": 122.8757
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "page_first",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 51470336,
+      "live_database_bytes": 51470336,
+      "mean": 11.63944,
+      "median": 11.14765,
+      "minimum": 8.4265,
+      "maximum": 18.3915,
+      "p95": 16.1011
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "request_creation",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 51470336,
+      "live_database_bytes": 51470336,
+      "mean": 22.437063333333334,
+      "median": 14.866800000000001,
+      "minimum": 8.3761,
+      "maximum": 228.5228,
+      "p95": 25.4625
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "sort_due",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 51470336,
+      "live_database_bytes": 51470336,
+      "mean": 113.70912333333334,
+      "median": 114.13045,
+      "minimum": 94.1412,
+      "maximum": 140.8868,
+      "p95": 125.1942
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "sort_title",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 51470336,
+      "live_database_bytes": 51470336,
+      "mean": 11.769603333333334,
+      "median": 11.744250000000001,
+      "minimum": 6.3035,
+      "maximum": 15.3504,
+      "p95": 15.3082
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "status_update",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 51470336,
+      "live_database_bytes": 51470336,
+      "mean": 16.308106666666667,
+      "median": 15.5266,
+      "minimum": 8.6876,
+      "maximum": 33.5862,
+      "p95": 30.3801
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "substring_search",
+      "unit": "ms",
+      "samples": 30,
+      "database_bytes": 51470336,
+      "live_database_bytes": 51470336,
+      "mean": 605.37517,
+      "median": 590.05665,
+      "minimum": 534.4974,
+      "maximum": 728.5112,
+      "p95": 697.7614
+    }
+  ],
+  "memory": [
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "sql_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 11336,
+      "peak_max_bytes": 11336
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "python_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 27435,
+      "peak_max_bytes": 27435
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "sql_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 11336,
+      "peak_max_bytes": 11336
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "python_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 27435,
+      "peak_max_bytes": 27435
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "sql_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 14200,
+      "peak_max_bytes": 14200
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "python_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 97691,
+      "peak_max_bytes": 97691
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "sql_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 14200,
+      "peak_max_bytes": 14200
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "python_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 97691,
+      "peak_max_bytes": 97691
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "sql_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 14635,
+      "peak_max_bytes": 14635
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "python_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 965004,
+      "peak_max_bytes": 965004
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "sql_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 14635,
+      "peak_max_bytes": 14635
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "python_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 965004,
+      "peak_max_bytes": 965004
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "sql_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 14586,
+      "peak_max_bytes": 14586
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "python_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 9686241,
+      "peak_max_bytes": 9686241
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "sql_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 14586,
+      "peak_max_bytes": 14586
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "python_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 9686241,
+      "peak_max_bytes": 9686241
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "sql_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 14642,
+      "peak_max_bytes": 14642
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "python_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 96837009,
+      "peak_max_bytes": 96837009
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "sql_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 14642,
+      "peak_max_bytes": 14642
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "python_filter",
+      "equivalent_results": true,
+      "samples": 3,
+      "peak_median_bytes": 96837009,
+      "peak_max_bytes": 96837009
+    }
+  ],
+  "equivalence": [
+    {
+      "size": 25,
+      "baseline_candidate_equal": true
+    },
+    {
+      "size": 100,
+      "baseline_candidate_equal": true
+    },
+    {
+      "size": 1000,
+      "baseline_candidate_equal": true
+    },
+    {
+      "size": 10000,
+      "baseline_candidate_equal": true
+    },
+    {
+      "size": 100000,
+      "baseline_candidate_equal": true
+    }
+  ],
+  "query_plans": [
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "substring",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "needle",
+        "needle"
+      ],
+      "plan": [
+        {
+          "id": 4,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "filter",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "New",
+        "High",
+        "Process"
+      ],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=? AND status=?)"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "page_first",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "page_deep",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+      "parameters": [
+        12
+      ],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "count",
+      "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_status (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "aggregation",
+      "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 12,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "sort_title",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 41,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "sort_due",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 45,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "baseline",
+      "operation": "trend",
+      "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 9,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 14,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "substring",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "needle",
+        "needle"
+      ],
+      "plan": [
+        {
+          "id": 4,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "filter",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "New",
+        "High",
+        "Process"
+      ],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_summary (archived=? AND status=? AND priority=?)"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "page_first",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "page_deep",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+      "parameters": [
+        12
+      ],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "count",
+      "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_perf_title (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "aggregation",
+      "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 6,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_perf_summary (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "sort_title",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "sort_due",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        },
+        {
+          "id": 45,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 25,
+      "phase": "candidate",
+      "operation": "trend",
+      "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 9,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        },
+        {
+          "id": 14,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "substring",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "needle",
+        "needle"
+      ],
+      "plan": [
+        {
+          "id": 4,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "filter",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "New",
+        "High",
+        "Process"
+      ],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_summary (archived=? AND status=? AND priority=?)"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "page_first",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "page_deep",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+      "parameters": [
+        80
+      ],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "count",
+      "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_perf_title (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "aggregation",
+      "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 6,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_perf_summary (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "sort_title",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "sort_due",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        },
+        {
+          "id": 45,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "candidate",
+      "operation": "trend",
+      "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 9,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        },
+        {
+          "id": 14,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "substring",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "needle",
+        "needle"
+      ],
+      "plan": [
+        {
+          "id": 4,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "filter",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "New",
+        "High",
+        "Process"
+      ],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=? AND status=?)"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "page_first",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "page_deep",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+      "parameters": [
+        80
+      ],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "count",
+      "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_status (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "aggregation",
+      "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 12,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "sort_title",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 41,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "sort_due",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 45,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "phase": "baseline",
+      "operation": "trend",
+      "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 9,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 14,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "substring",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "needle",
+        "needle"
+      ],
+      "plan": [
+        {
+          "id": 4,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "filter",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "New",
+        "High",
+        "Process"
+      ],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=? AND status=?)"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "page_first",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "page_deep",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+      "parameters": [
+        890
+      ],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "count",
+      "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_status (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "aggregation",
+      "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 12,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "sort_title",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 41,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "sort_due",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 45,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "baseline",
+      "operation": "trend",
+      "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 9,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 14,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "substring",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "needle",
+        "needle"
+      ],
+      "plan": [
+        {
+          "id": 4,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "filter",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "New",
+        "High",
+        "Process"
+      ],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_summary (archived=? AND status=? AND priority=?)"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "page_first",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "page_deep",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+      "parameters": [
+        890
+      ],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "count",
+      "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_perf_title (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "aggregation",
+      "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 6,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_perf_summary (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "sort_title",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "sort_due",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        },
+        {
+          "id": 45,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 1000,
+      "phase": "candidate",
+      "operation": "trend",
+      "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 9,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        },
+        {
+          "id": 14,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "substring",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "needle",
+        "needle"
+      ],
+      "plan": [
+        {
+          "id": 4,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "filter",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "New",
+        "High",
+        "Process"
+      ],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_summary (archived=? AND status=? AND priority=?)"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "page_first",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "page_deep",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+      "parameters": [
+        8990
+      ],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "count",
+      "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_perf_title (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "aggregation",
+      "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 6,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_perf_summary (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "sort_title",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "sort_due",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        },
+        {
+          "id": 45,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "candidate",
+      "operation": "trend",
+      "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 9,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        },
+        {
+          "id": 14,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "substring",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "needle",
+        "needle"
+      ],
+      "plan": [
+        {
+          "id": 4,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "filter",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "New",
+        "High",
+        "Process"
+      ],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=? AND status=?)"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "page_first",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "page_deep",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+      "parameters": [
+        8990
+      ],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "count",
+      "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_status (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "aggregation",
+      "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 12,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "sort_title",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 41,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "sort_due",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 45,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 10000,
+      "phase": "baseline",
+      "operation": "trend",
+      "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 9,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 14,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "substring",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "needle",
+        "needle"
+      ],
+      "plan": [
+        {
+          "id": 4,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "filter",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "New",
+        "High",
+        "Process"
+      ],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=? AND status=?)"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "page_first",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "page_deep",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+      "parameters": [
+        89990
+      ],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "count",
+      "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_improvement_active_status (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "aggregation",
+      "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 12,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "sort_title",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 41,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "sort_due",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 45,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "baseline",
+      "operation": "trend",
+      "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 9,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_improvement_active_status (archived=?)"
+        },
+        {
+          "id": 14,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "substring",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND (instr(lower(title),lower(?))>0 OR instr(lower(description),lower(?))>0) ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "needle",
+        "needle"
+      ],
+      "plan": [
+        {
+          "id": 4,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "filter",
+      "sql": "SELECT * FROM improvement WHERE archived=0 AND status=? AND priority=? AND category=? ORDER BY id DESC LIMIT 10",
+      "parameters": [
+        "New",
+        "High",
+        "Process"
+      ],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_summary (archived=? AND status=? AND priority=?)"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "page_first",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET 0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "page_deep",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY id DESC LIMIT 10 OFFSET ?",
+      "parameters": [
+        89990
+      ],
+      "plan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SCAN improvement"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "count",
+      "sql": "SELECT COUNT(*) FROM improvement WHERE archived=0",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 3,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_perf_title (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "aggregation",
+      "sql": "SELECT status,priority,COUNT(*) FROM improvement WHERE archived=0 GROUP BY status,priority",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 6,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING COVERING INDEX idx_perf_summary (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "sort_title",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY title COLLATE NOCASE,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "sort_due",
+      "sql": "SELECT * FROM improvement WHERE archived=0 ORDER BY due_date IS NULL,due_date,id LIMIT 10",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 5,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        },
+        {
+          "id": 45,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR ORDER BY"
+        }
+      ]
+    },
+    {
+      "size": 100000,
+      "phase": "candidate",
+      "operation": "trend",
+      "sql": "SELECT substr(created_at,1,10) day,COUNT(*) FROM improvement WHERE archived=0 GROUP BY day ORDER BY day DESC LIMIT 30",
+      "parameters": [],
+      "plan": [
+        {
+          "id": 9,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH improvement USING INDEX idx_perf_title (archived=?)"
+        },
+        {
+          "id": 14,
+          "parent": 0,
+          "notused": 0,
+          "detail": "USE TEMP B-TREE FOR GROUP BY"
+        }
+      ]
+    }
+  ],
+  "concurrency_summary": [
+    {
+      "journal": "DELETE",
+      "busy_timeout_ms": 0,
+      "operation": "read",
+      "requests": 72,
+      "failures": 1,
+      "mean": 521.3663281690141,
+      "median": 504.045,
+      "minimum": 427.9968,
+      "maximum": 757.0881,
+      "p95": 728.0665
+    },
+    {
+      "journal": "DELETE",
+      "busy_timeout_ms": 0,
+      "operation": "write",
+      "requests": 72,
+      "failures": 69,
+      "mean": 22.370733333333334,
+      "median": 20.0381,
+      "minimum": 17.0049,
+      "maximum": 30.0692,
+      "p95": 30.0692
+    },
+    {
+      "journal": "DELETE",
+      "busy_timeout_ms": 5000,
+      "operation": "read",
+      "requests": 72,
+      "failures": 0,
+      "mean": 717.2288291666666,
+      "median": 676.1600000000001,
+      "minimum": 319.9275,
+      "maximum": 1357.5854,
+      "p95": 1101.273
+    },
+    {
+      "journal": "DELETE",
+      "busy_timeout_ms": 5000,
+      "operation": "write",
+      "requests": 72,
+      "failures": 0,
+      "mean": 161.5396375,
+      "median": 161.08550000000002,
+      "minimum": 14.502,
+      "maximum": 460.19,
+      "p95": 387.1369
+    },
+    {
+      "journal": "WAL",
+      "busy_timeout_ms": 0,
+      "operation": "read",
+      "requests": 72,
+      "failures": 0,
+      "mean": 599.3087083333334,
+      "median": 599.0026499999999,
+      "minimum": 544.7652,
+      "maximum": 663.7348,
+      "p95": 642.3878
+    },
+    {
+      "journal": "WAL",
+      "busy_timeout_ms": 0,
+      "operation": "write",
+      "requests": 72,
+      "failures": 7,
+      "mean": 18.52224153846154,
+      "median": 16.6445,
+      "minimum": 7.2849,
+      "maximum": 113.6523,
+      "p95": 32.0216
+    },
+    {
+      "journal": "WAL",
+      "busy_timeout_ms": 5000,
+      "operation": "read",
+      "requests": 72,
+      "failures": 0,
+      "mean": 628.5300402777777,
+      "median": 617.2254499999999,
+      "minimum": 531.2547,
+      "maximum": 801.8343,
+      "p95": 779.0967
+    },
+    {
+      "journal": "WAL",
+      "busy_timeout_ms": 5000,
+      "operation": "write",
+      "requests": 72,
+      "failures": 0,
+      "mean": 21.734669444444446,
+      "median": 18.3594,
+      "minimum": 6.0568,
+      "maximum": 71.6946,
+      "p95": 49.773
+    }
+  ],
+  "lock_probes": [
+    {
+      "journal": "DELETE",
+      "requested_timeout_ms": 50,
+      "read_count": 100003,
+      "error": "database is locked",
+      "elapsed_ms": 112.1911
+    },
+    {
+      "journal": "DELETE",
+      "requested_timeout_ms": 50,
+      "read_count": 100072,
+      "error": "database is locked",
+      "elapsed_ms": 118.508
+    },
+    {
+      "journal": "WAL",
+      "requested_timeout_ms": 50,
+      "read_count": 100065,
+      "error": "database is locked",
+      "elapsed_ms": 107.7913
+    },
+    {
+      "journal": "WAL",
+      "requested_timeout_ms": 50,
+      "read_count": 100072,
+      "error": "database is locked",
+      "elapsed_ms": 123.4676
+    }
+  ],
+  "candidate_indexes": {
+    "idx_perf_summary": "CREATE INDEX idx_perf_summary ON improvement(archived,status,priority)",
+    "idx_perf_title": "CREATE INDEX idx_perf_title ON improvement(archived,title COLLATE NOCASE)"
+  }
+}

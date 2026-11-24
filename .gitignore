@@ -9,3 +9,5 @@ instance/
 .ruff_cache/
 
 instance/.session-secret
+
+.pytest-tmp*/

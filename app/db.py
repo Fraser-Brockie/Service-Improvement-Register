@@ -1,6 +1,12 @@
 import sqlite3
 from flask import current_app, g
 
+# Shared with the isolated A/B benchmark so the evaluated definitions cannot drift.
+PERFORMANCE_INDEXES = {
+    "idx_improvement_active_summary": "CREATE INDEX IF NOT EXISTS idx_improvement_active_summary ON improvement(archived,status,priority)",
+    "idx_improvement_active_title": "CREATE INDEX IF NOT EXISTS idx_improvement_active_title ON improvement(archived,title COLLATE NOCASE)",
+}
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS improvement (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -86,6 +92,8 @@ def init_db():
         existing = {row[1] for row in db.execute(f"PRAGMA table_info({table})")}
         if "user_id" not in existing:
             db.execute(f"ALTER TABLE {table} ADD COLUMN user_id INTEGER REFERENCES app_user(id)")
+    for statement in PERFORMANCE_INDEXES.values():
+        db.execute(statement)
     db.commit()
 
 
